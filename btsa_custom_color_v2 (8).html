@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTSA — Custom Color Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  height: 52px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.1);
+  background: #fff;
+}
+.nav-left { display: flex; gap: 2rem; align-items: center; flex: 1; }
+.nav-left a, .nav-right a { font-size: 12px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; color: #0d0d0d; cursor: pointer; }
+.nav-center { font-size: 20px; font-weight: 900; letter-spacing: 0.06em; color: #0d0d0d; text-align: center; flex: 1; }
+.nav-right { display: flex; justify-content: flex-end; align-items: center; flex: 1; gap: 0.5rem; }
+.nav-right a { font-size: 12px; font-weight: 500; color: #0d0d0d; }
+
+/* GRID CONTAINER */
+#grid {
+  position: fixed;
+  top: 52px; left: 0; right: 0; bottom: 0;
+  height: calc(100vh - 52px);
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 1fr;
+  transition: grid-template-columns 0.55s cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+/* SWATCH TILE */
+.tile {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: flex 0.55s cubic-bezier(0.77, 0, 0.18, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1.75rem 1.5rem;
+  min-width: 0;
+  height: 100%;
+}
+
+/* COLLAPSED STATE — swatch card label at bottom */
+.tile-label {
+  transition: opacity 0.3s ease;
+  opacity: 0.55;
+}
+.tile-pantone-word {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  margin-bottom: 1px;
+  white-space: nowrap;
+}
+.tile-code {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  margin-bottom: 1px;
+  white-space: nowrap;
+}
+.tile-name {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* EXPANDED CONTENT — hidden by default */
+.tile-content {
+  position: absolute;
+  inset: 0;
+  padding: 2rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease 0.15s;
+}
+
+.tile.active .tile-content {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.tile.active .tile-label {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* CONTENT INSIDE EXPANDED */
+.tc-top { display: flex; flex-direction: column; gap: 2px; color: currentColor; }
+.tc-code { font-size: 13px; font-weight: 400; letter-spacing: 0.02em; text-transform: none; opacity: 0.55; color: currentColor; }
+.tc-name { font-size: 13px; font-weight: 400; letter-spacing: 0.02em; text-transform: none; opacity: 0.55; color: currentColor; margin-bottom: 0; }
+.tc-hex { font-size: 9px; letter-spacing: 0.08em; opacity: 0.35; }
+
+.tc-bottom { display: flex; flex-direction: column; gap: 0; }
+.tc-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.5; margin-bottom: 0.8rem; }
+.tc-headline { font-size: clamp(24px, 2.8vw, 48px); font-weight: 900; line-height: 0.91; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 1.25rem; }
+.tc-body { font-size: 12px; line-height: 1.75; opacity: 0.7; max-width: 340px; }
+.tc-body + .tc-body { margin-top: 0.75rem; }
+.tc-badge { display: inline-block; margin-top: 1rem; font-size: 9px; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 12px; border: 1.5px solid currentColor; align-self: flex-start; }
+.tc-link { display: inline-block; margin-top: 1rem; font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; border-bottom: 1.5px solid currentColor; padding-bottom: 2px; text-decoration: none; cursor: pointer; opacity: 0.8; }
+
+.btn-solid { display: inline-block; padding: 9px 16px; font-size: 9px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border: none; font-family: 'Inter', sans-serif; white-space: nowrap; margin-bottom: 6px; }
+.btn-ghost { display: inline-block; padding: 9px 16px; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; background: transparent; font-family: 'Inter', sans-serif; white-space: nowrap; }
+
+.cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 1rem; background: rgba(255,255,255,0.18); }
+.cert-item { padding: 0.75rem 0.85rem; }
+.cert-name { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+.cert-desc { font-size: 10px; line-height: 1.5; opacity: 0.6; }
+
+
+
+
+/* HERO TILE */
+.hero-top { display: flex; flex-direction: column; gap: 4px; color: currentColor; }
+.hero-bottom { margin-top: auto; display: flex; flex-direction: column; }
+.hero-program { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.5; margin-bottom: 0.85rem; }
+.hero-headline { font-size: clamp(32px, 3.5vw, 60px); font-weight: 900; line-height: 0.91; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 1rem; }
+.hero-sub { font-size: 13px; line-height: 1.75; opacity: 0.55; max-width: 340px; }
+
+/* COLORS */
+.t0 { background: #9B2335; color: #fff; }
+.t1 { background: #EFE237; color: #1a1400; }
+.t2 { background: #EDAFC8; color: #2a0d0a; }
+.t3 { background: #5072A7; color: #fff; }
+.t4 { background: #3E8B76; color: #fff; }
+.t5 { background: #857E7B; color: #fff; }
+
+/* GRID COLUMN WIDTHS */
+#grid { grid-template-columns: 3fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr; }
+/* expanded-0 unused */
+#grid.expanded-1 { grid-template-columns: 2fr 3fr 0.4fr 0.4fr 0.4fr 0.4fr; }
+#grid.expanded-2 { grid-template-columns: 2fr 0.4fr 3fr 0.4fr 0.4fr 0.4fr; }
+#grid.expanded-3 { grid-template-columns: 2fr 0.4fr 0.4fr 3fr 0.4fr 0.4fr; }
+#grid.expanded-4 { grid-template-columns: 2fr 0.4fr 0.4fr 0.4fr 3fr 0.4fr; }
+#grid.expanded-5 { grid-template-columns: 2fr 0.4fr 0.4fr 0.4fr 0.4fr 3fr; }
+
+/* Collapsed tiles hide text */
+#grid[class*="expanded-"] .tile:not(.active) .tile-name,
+#grid[class*="expanded-"] .tile:not(.active) .tile-code,
+#grid[class*="expanded-"] .tile:not(.active) .tile-pantone-word {
+  opacity: 0;
+}
+
+
+
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="#">Shop</a>
+    <a href="#">Account</a>
+    <a href="#">Contact</a>
+    <a href="#">Cart (0)</a>
+  </div>
+  <div class="nav-center">BTSA</div>
+  <div class="nav-right">
+    <span>✿</span>
+    <a href="#">Pick a Pantone</a>
+  </div>
+</nav>
+
+<div id="grid">
+
+  <!-- T0 — Jester Red — HERO, always shows content -->
+  <div class="tile t0" id="t0" onclick="toggle(0)">    <div class="hero-tag">
+      <div class="tile-code">Pantone 19-1862 TCX</div>
+      <div class="tile-name">Jester Red</div>
+    </div>
+    <div class="hero-bottom">
+      <div class="hero-program">Custom Color Program</div>
+      <div class="hero-headline">Any Color.<br>Any Style.</div>
+      <p class="hero-sub">Your ideas, brought to life in any color.</p>
+    </div>
+  </div>
+
+  <!-- T1 — Summer Sun -->
+  <div class="tile t1" id="t1" onclick="toggle(1)">
+    <div class="tile-label">
+      <div class="tile-pantone-word">Pantone</div>
+      <div class="tile-code">12-0650 TCX</div>
+      <div class="tile-name">Summer Sun</div>
+    </div>
+    <div class="tile-content">
+      <div class="tc-top">
+        <div class="tc-code">Pantone 12-0650 TCX</div>
+        <div class="tc-name">Summer Sun</div>
+      </div>
+      <div class="tc-bottom">
+        <div class="tc-eyebrow">Pick a Pantone</div>
+        <div class="tc-headline">Your Color<br>Starts Here.</div>
+        <p class="tc-body">Use our Pick a Pantone tool to explore any color and instantly apply it across BTSA styles. Once you find the right style, your selected color carries with you to the product page where you can place a custom color order.</p>
+        <p class="tc-body">More than a visualization tool, it represents what BTSA can produce: transforming one of our blanks into a custom garment-dyed color built around your exact direction.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- T2 — Orchid Pink -->
+  <div class="tile t2" id="t2" onclick="toggle(2)">
+    <div class="tile-label">
+      <div class="tile-pantone-word">Pantone</div>
+      <div class="tile-code">13-2010 TCX</div>
+      <div class="tile-name">Orchid Pink</div>
+    </div>
+    <div class="tile-content">
+      <div class="tc-top">
+        <div class="tc-code">Pantone 13-2010 TCX</div>
+        <div class="tc-name">Orchid Pink</div>
+      </div>
+      <div class="tc-bottom">
+        <div class="tc-eyebrow">The foundation</div>
+        <div class="tc-headline">Every custom<br>color begins<br>with a BTSA<br>PFD blank.</div>
+        <p class="tc-body">Clean, undyed, and ready for transformation — it provides the foundation for developing a color around your exact creative direction.</p>
+        <a class="tc-link">Learn more about PFD →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- T3 — Palace Blue -->
+  <div class="tile t3" id="t3" onclick="toggle(3)">
+    <div class="tile-label">
+      <div class="tile-pantone-word">Pantone</div>
+      <div class="tile-code">18-4043 TCX</div>
+      <div class="tile-name">Palace Blue</div>
+    </div>
+    <div class="tile-content">
+      <div class="tc-top">
+        <div class="tc-code">Pantone 18-4043 TCX</div>
+        <div class="tc-name">Palace Blue</div>
+      </div>
+      <div class="tc-bottom">
+        <div class="tc-eyebrow">Your inspiration becomes the color</div>
+        <div class="tc-headline">We can match<br>anything.</div>
+        <p class="tc-body">Send us a reference, idea, or source of inspiration — and our team will work alongside you to translate it into a custom color. Together we'll refine the direction, develop the match, and garment dye it onto the BTSA style of your choice.</p>
+        <div style="margin-top:1rem;display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+          <button class="btn-solid" style="background:#fff;color:#5072A7;">Share your reference ↗</button>
+          <button class="btn-ghost" style="color:#fff;border:1px solid rgba(255,255,255,0.4);">Contact us</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T4 — Greenlake -->
+  <div class="tile t4" id="t4" onclick="toggle(4)">
+    <div class="tile-label">
+      <div class="tile-pantone-word">Pantone</div>
+      <div class="tile-code">17-5528 TCX</div>
+      <div class="tile-name">Greenlake</div>
+    </div>
+    <div class="tile-content">
+      <div class="tc-top">
+        <div class="tc-code">Pantone 17-5528 TCX</div>
+        <div class="tc-name">Greenlake</div>
+      </div>
+      <div class="tc-bottom">
+        <div class="tc-eyebrow">A more responsible dye process</div>
+        <div class="tc-headline">Lasting color.<br>Lower impact.</div>
+        <p class="tc-body">We believe color should be developed with the same care as the garment itself — balancing creative freedom, lasting quality, and responsible manufacturing.</p>
+        <div class="cert-grid">
+          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">bluesign® approved</div><div class="cert-desc">Responsible chemical use</div></div>
+          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">GOTS certified</div><div class="cert-desc">Global organic textile standard</div></div>
+          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">Low-water process</div><div class="cert-desc">Reduced water usage</div></div>
+          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">Garment-dyed</div><div class="cert-desc">Color on the finished garment</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T5 — Magnetite -->
+  <div class="tile t5" id="t5" onclick="toggle(5)">
+    <div class="tile-label">
+      <div class="tile-pantone-word">Pantone</div>
+      <div class="tile-code">17-2501 TCX</div>
+      <div class="tile-name">Magnetite</div>
+    </div>
+    <div class="tile-content">
+      <div class="tc-top">
+        <div class="tc-code">Pantone 17-2501 TCX</div>
+        <div class="tc-name">Magnetite</div>
+      </div>
+      <div class="tc-bottom">
+        <div class="tc-headline">Your next<br>great idea<br>— one click<br>away.</div>
+        <div style="margin-top:1.25rem;display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+          <button class="btn-solid" style="background:#fff;color:#857E7B;">Pick a Pantone ↗</button>
+          <button class="btn-ghost" style="color:#fff;border:1px solid rgba(255,255,255,0.4);">Browse styles</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const grid = document.getElementById('grid');
+const tiles = document.querySelectorAll('.tile');
+let active = -1;
+
+function toggle(idx) {
+  if (idx === 0) return; // T0 is always the hero
+  if (active === idx) {
+    // Collapse back to hero default
+    tiles[idx].classList.remove('active');
+    grid.className = '';
+    active = -1;
+  } else {
+    // Collapse previous
+    if (active > 0) tiles[active].classList.remove('active');
+    active = idx;
+    tiles[idx].classList.add('active');
+    grid.className = '';
+    grid.classList.add('expanded-' + idx);
+  }
+}
+</script>
+</body>
+</html>
