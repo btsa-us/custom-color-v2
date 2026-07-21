@@ -10,33 +10,16 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  height: 100%;
-  width: 100%;
   font-family: 'Inter', sans-serif;
-  overflow: hidden;
 }
 
-/* NAV */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 2.5rem;
-  height: 52px;
-  border-bottom: 0.5px solid rgba(0,0,0,0.1);
-  background: #fff;
-}
-.nav-left { display: flex; gap: 2rem; align-items: center; flex: 1; }
-.nav-left a, .nav-right a { font-size: 12px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; color: #0d0d0d; cursor: pointer; }
-.nav-center { display: flex; align-items: center; justify-content: center; flex: 1; }
-.nav-right { display: flex; justify-content: flex-end; align-items: center; flex: 1; gap: 0.5rem; }
-.nav-right a { font-size: 12px; font-weight: 500; color: #0d0d0d; }
+
 
 /* GRID CONTAINER */
 #grid {
+  pointer-events: all;
+  position: relative;
+  z-index: 1;
   position: fixed;
   top: 52px; left: 0; right: 0; bottom: 0;
   height: calc(100vh - 52px);
@@ -48,6 +31,7 @@ nav {
 
 /* SWATCH TILE */
 .tile {
+  pointer-events: all;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -57,6 +41,7 @@ nav {
   justify-content: flex-start;
   padding: 1.75rem 1.5rem;
   min-width: 0;
+  min-height: 100%;
   height: 100%;
 }
 
@@ -145,15 +130,18 @@ nav {
 .hero-sub { font-size: 13px; line-height: 1.75; opacity: 0.55; max-width: 340px; }
 
 /* COLORS */
-.t0 { background: #9B2335; color: #fff; }
+.t0 { background: #9E1030; color: #fff; }
 .t1 { background: #EFE237; color: #1a1400; }
-.t2 { background: #EDAFC8; color: #2a0d0a; }
-.t3 { background: #5072A7; color: #fff; }
-.t4 { background: #3E8B76; color: #fff; }
-.t5 { background: #857E7B; color: #fff; }
+.t2 { background: #F3BBCA; color: #2a0d0a; }
+.t3 { background: #356CB0; color: #fff; }
+.t4 { background: #007D69; color: #fff; }
+.t5 { background: #81787A; color: #fff; }
 
 /* GRID COLUMN WIDTHS */
-#grid { grid-template-columns: 3fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr; }
+#grid {
+  pointer-events: all;
+  position: relative;
+  z-index: 1; grid-template-columns: 3fr 0.6fr 0.6fr 0.6fr 0.6fr 0.6fr; }
 /* expanded-0 unused */
 #grid.expanded-1 { grid-template-columns: 2fr 3fr 0.4fr 0.4fr 0.4fr 0.4fr; }
 #grid.expanded-2 { grid-template-columns: 2fr 0.4fr 3fr 0.4fr 0.4fr 0.4fr; }
@@ -170,28 +158,30 @@ nav {
 
 
 
+
+/* Force full width/height — break out of Shopify page wrapper */
+#custom-color-root {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 50;
+  font-family: 'Inter', sans-serif;
+}
+
+#custom-color-root #grid {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  height: 100%;
+  width: 100%;
+}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="nav-left">
-    <a href="#">Shop</a>
-    <a href="#">Account</a>
-    <a href="#">Contact</a>
-    <a href="#">Cart (0)</a>
-  </div>
-  <div class="nav-center"><img src="https://cdn.shopify.com/s/files/1/0770/7089/3249/files/btsa-logo_14c0c401-9337-4648-a12e-95d5c897dfa1.png?v=1715905423" style="height:22px;width:auto;display:block;" alt="BTSA"></div>
-  <div class="nav-right">
-    <span>✿</span>
-    <a href="#">Pick a Pantone</a>
-  </div>
-</nav>
-
+<div id="custom-color-root">
 <div id="grid">
 
   <!-- T0 — Jester Red — HERO, always shows content -->
-  <div class="tile t0" id="t0" onclick="toggle(0)">    <div class="hero-tag">
+  <div class="tile t0" id="t0">    <div class="hero-tag">
       <div class="tile-code">Pantone 19-1862 TCX</div>
       <div class="tile-name">Jester Red</div>
     </div>
@@ -203,7 +193,7 @@ nav {
   </div>
 
   <!-- T1 — Summer Sun -->
-  <div class="tile t1" id="t1" onclick="toggle(1)">
+  <div class="tile t1" id="t1">
     <div class="tile-label">
       <div class="tile-pantone-word">Pantone</div>
       <div class="tile-code">12-0650 TCX</div>
@@ -224,7 +214,7 @@ nav {
   </div>
 
   <!-- T2 — Orchid Pink -->
-  <div class="tile t2" id="t2" onclick="toggle(2)">
+  <div class="tile t2" id="t2">
     <div class="tile-label">
       <div class="tile-pantone-word">Pantone</div>
       <div class="tile-code">13-2010 TCX</div>
@@ -245,7 +235,7 @@ nav {
   </div>
 
   <!-- T3 — Palace Blue -->
-  <div class="tile t3" id="t3" onclick="toggle(3)">
+  <div class="tile t3" id="t3">
     <div class="tile-label">
       <div class="tile-pantone-word">Pantone</div>
       <div class="tile-code">18-4043 TCX</div>
@@ -261,7 +251,7 @@ nav {
         <div class="tc-headline">We can match<br>anything.</div>
         <p class="tc-body">Send us a reference, idea, or source of inspiration — and our team will work alongside you to translate it into a custom color. Together we'll refine the direction, develop the match, and garment dye it onto the BTSA style of your choice.</p>
         <div style="margin-top:1rem;display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
-          <button class="btn-solid" style="background:#fff;color:#5072A7;">Share your reference ↗</button>
+          <button class="btn-solid" style="background:#fff;color:#356CB0;">Share your reference ↗</button>
           <button class="btn-ghost" style="color:#fff;border:1px solid rgba(255,255,255,0.4);">Contact us</button>
         </div>
       </div>
@@ -269,7 +259,7 @@ nav {
   </div>
 
   <!-- T4 — Greenlake -->
-  <div class="tile t4" id="t4" onclick="toggle(4)">
+  <div class="tile t4" id="t4">
     <div class="tile-label">
       <div class="tile-pantone-word">Pantone</div>
       <div class="tile-code">17-5528 TCX</div>
@@ -285,17 +275,17 @@ nav {
         <div class="tc-headline">Lasting color.<br>Lower impact.</div>
         <p class="tc-body">We believe color should be developed with the same care as the garment itself — balancing creative freedom, lasting quality, and responsible manufacturing.</p>
         <div class="cert-grid">
-          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">bluesign® approved</div><div class="cert-desc">Responsible chemical use</div></div>
-          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">GOTS certified</div><div class="cert-desc">Global organic textile standard</div></div>
-          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">Low-water process</div><div class="cert-desc">Reduced water usage</div></div>
-          <div class="cert-item" style="background:#3E8B76;"><div class="cert-name">Garment-dyed</div><div class="cert-desc">Color on the finished garment</div></div>
+          <div class="cert-item" style="background:#007D69;"><div class="cert-name">bluesign® approved</div><div class="cert-desc">Responsible chemical use</div></div>
+          <div class="cert-item" style="background:#007D69;"><div class="cert-name">GOTS certified</div><div class="cert-desc">Global organic textile standard</div></div>
+          <div class="cert-item" style="background:#007D69;"><div class="cert-name">Low-water process</div><div class="cert-desc">Reduced water usage</div></div>
+          <div class="cert-item" style="background:#007D69;"><div class="cert-name">Garment-dyed</div><div class="cert-desc">Color on the finished garment</div></div>
         </div>
       </div>
     </div>
   </div>
 
   <!-- T5 — Magnetite -->
-  <div class="tile t5" id="t5" onclick="toggle(5)">
+  <div class="tile t5" id="t5">
     <div class="tile-label">
       <div class="tile-pantone-word">Pantone</div>
       <div class="tile-code">17-2501 TCX</div>
@@ -309,7 +299,7 @@ nav {
       <div class="tc-bottom">
         <div class="tc-headline">Your next<br>great idea<br>— one click<br>away.</div>
         <div style="margin-top:1.25rem;display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
-          <button class="btn-solid" style="background:#fff;color:#857E7B;">Pick a Pantone ↗</button>
+          <button class="btn-solid" style="background:#fff;color:#81787A;">Pick a Pantone ↗</button>
           <button class="btn-ghost" style="color:#fff;border:1px solid rgba(255,255,255,0.4);">Browse styles</button>
         </div>
       </div>
@@ -317,28 +307,42 @@ nav {
   </div>
 
 </div>
+</div>
 
 <script>
-const grid = document.getElementById('grid');
-const tiles = document.querySelectorAll('.tile');
-let active = -1;
+(function() {
+  function initSwatches() {
+    var grid = document.getElementById('grid');
+    if (!grid) return;
+    var tiles = grid.querySelectorAll('.tile');
+    var active = -1;
 
-function toggle(idx) {
-  if (idx === 0) return; // T0 is always the hero
-  if (active === idx) {
-    // Collapse back to hero default
-    tiles[idx].classList.remove('active');
-    grid.className = '';
-    active = -1;
-  } else {
-    // Collapse previous
-    if (active > 0) tiles[active].classList.remove('active');
-    active = idx;
-    tiles[idx].classList.add('active');
-    grid.className = '';
-    grid.classList.add('expanded-' + idx);
+    tiles.forEach(function(tile, idx) {
+      tile.style.cursor = 'pointer';
+      tile.addEventListener('click', function(e) {
+        if (idx === 0) return;
+        if (active === idx) {
+          tile.classList.remove('active');
+          grid.className = '';
+          active = -1;
+        } else {
+          if (active > 0) tiles[active].classList.remove('active');
+          active = idx;
+          tile.classList.add('active');
+          grid.className = '';
+          grid.classList.add('expanded-' + idx);
+        }
+      });
+    });
   }
-}
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSwatches);
+  } else {
+    initSwatches();
+  }
+})();
 </script>
 </body>
 </html>
+
